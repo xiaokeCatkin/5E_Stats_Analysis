@@ -6,8 +6,9 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import tempfile
 import shutil
+from flask import Flask, send_from_directory, redirect, url_for
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static'))
 CORS(app)  
 
 @app.route('/api/fetch_stats', methods=['POST'])
@@ -119,6 +120,17 @@ def analyze_stats():
             'success': False,
             'message': str(e)
         }), 500
+
+# 修改静态文件路由
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    static_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+    return send_from_directory(static_folder, filename)
+
+# 添加根路径重定向
+@app.route('/')
+def index():
+    return redirect(url_for('static_files', filename='web_interface.html'))
 
 if __name__ == '__main__':
     app.run(port=5000)
