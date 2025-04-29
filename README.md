@@ -37,7 +37,7 @@
 ```bash
 python api/api_server.py
 ```
-2. 打开 web_interface.html 使用可视化界面
+2. 打开 0.0.0.0:5000 使用可视化界面
 
 ## 功能特性
 

@@ -57,21 +57,13 @@ class CSGOPerformanceAnalyzer:
 
     def save_html_result(self, analysis_text):
         """保存为HTML格式的分析结果"""
-        from jinja2 import Template
         os.makedirs('result', exist_ok=True)
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-        # 加载HTML模板
-        template_path = os.path.join(PATH, 'report_template.html')
-        with open(template_path, 'r', encoding='utf-8') as f:
-            template = Template(f.read())
-        
-        # 渲染HTML
-        html_content = template.render(
-            timestamp=timestamp,
-            content=analysis_text
-        )
-        
+        import re
+        if re.search(r'```html', analysis_text):
+            html_content = re.sub(r'```html', '', analysis_text)
+        if re.search(r'```', analysis_text):
+            html_content = re.sub(r'```', '', html_content)
         # 保存HTML文件
         output_path = f"result/result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
         with open(output_path, 'w', encoding='utf-8') as f:
@@ -102,17 +94,10 @@ def main(model_name="gemini-2.5-pro-exp-03-25",
         analysis = analyzer.analyze_data(data, template)
         
         # 保存结果
-        if args.output:
-            output_path = args.output
-            with open(output_path, 'w', encoding='utf-8') as f:
-                f.write(analysis)
-        else:
-            output_path = analyzer.save_result(analysis)
+        output_path = f"result/result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
         
         analyzer.save_html_result(analysis)  # 保存为HTML格式
-        
         print(f"\n分析完成，结果已保存到: {output_path}")
-        print("\n=== 分析报告 ===")
         
         return analysis  # 返回分析结果
     except Exception as e:
