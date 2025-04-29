@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS2数据分析系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section-title {
+            margin-top: 0;
+            color: #444;
+        }
+        input, button, select {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CS2数据分析系统</h1>
+        
+        <div class="section">
+            <h2 class="section-title">1. 获取玩家数据</h2>
+            <div>
+                <label for="uuid">输入玩家UUID:</label>
+                <input type="text" id="uuid" placeholder="请输入CS:GO玩家UUID" required>
+                <button onclick="toggleAdvanced()">高级输入</button>
+                <button onclick="fetchData()">获取数据</button>
+            </div>
+            
+            <div id="advancedParams" style="display:none; margin-top:15px; padding:15px; background:#f0f0f0; border-radius:5px;">
+                <h3>高级参数设置</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label for="start_time">开始时间戳:</label>
+                        <input type="number" id="start_time" value="1000000000">
+                    </div>
+                    <div>
+                        <label for="end_time">结束时间戳:</label>
+                        <input type="number" id="end_time" value="9999999999">
+                    </div>
+                    <div>
+                        <label for="limit">每页限制:</label>
+                        <input type="number" id="limit" value="3">
+                    </div>
+                    <div>
+                        <label for="max_pages">最大页数:</label>
+                        <input type="number" id="max_pages" value="3">
+                    </div>
+                    <div>
+                        <label for="match_type">比赛类型:</label>
+                        <input type="number" id="match_type" value="-1">
+                    </div>
+                    <div>
+                        <label for="cs_type">CS类型:</label>
+                        <input type="number" id="cs_type" value="0">
+                    </div>
+                    <div>
+                        <label for="date">日期筛选:</label>
+                        <input type="number" id="date" value="0">
+                    </div>
+                </div>
+            </div>
+            <div class="loading" id="loading1">
+                <div class="spinner"></div>
+                <p>正在获取数据，请稍候...</p>
+            </div>
+            <div id="fetchResult"></div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">2. 分析玩家数据</h2>
+            <div>
+                <div style="margin: 10px 0;">
+                    <label for="statsFile" style="display: block; margin-bottom: 5px;">选择战绩数据文件:</label>
+                    <input type="file" id="statsFile" accept=".csv,.json" 
+                           style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; background: #f8f8f8;">
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <label for="templateFile" style="display: block; margin-bottom: 5px;">选择大模型模板文件:</label>
+                    <input type="file" id="templateFile" accept=".json,.txt" 
+                           style="padding: 8px; border: 1px solid #4CAF50; border-radius: 4px; background: #f0fff0;">
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <label for="modelName" style="display: block; margin-bottom: 5px;">选择大模型:</label>
+                    <select id="modelName" style="padding: 8px; width: 100%;">
+                        <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro</option>
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-4o-mini">GPT 4o Mini</option>
+                        <option value="gpt-4o">GPT 4o</option>
+                        <option value="gpt-4-turbo-preview">GPT 4 Turbo</option>
+                        <option value="claude-3-7-sonnet-thinking">Claude 3.7 sonnet thinking </option>
+                        <option value="deepseek-r1">DeepSeek R1</option>
+                        <option value="deepseek-v3">DeepSeek V3</option>
+                        <option value="deepseek-v3-0324">DeepSeek V3 0324</option>
+                        <option value="grok-3">Grok 3</option>
+                    </select>
+                </div>
+                
+                <button onclick="analyzeData()" style="margin-top: 15px;">开始分析</button>
+                <button id="cancelBtn" onclick="cancelAnalysis()" style="margin-top: 15px; display: none; background-color: #f44336;">强制打断</button>
+            </div>
+            <div class="loading" id="loading2">
+                <div class="spinner"></div>
+                <p>正在分析数据，请稍候...</p>
+            </div>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAdvanced() {
+            const advDiv = document.getElementById('advancedParams');
+            advDiv.style.display = advDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        let isFetching = false;  // 添加全局状态变量
+
+        function fetchData() {
+            if(isFetching) {
+                alert('请勿重复点击，正在获取数据中...');
+                return;
+            }
+
+            const uuid = document.getElementById('uuid').value.trim();
+            if (!uuid) {
+                alert('请输入有效的UUID');
+                return;
+            }
+
+            isFetching = true;  // 设置正在获取状态
+            const loading = document.getElementById('loading1');
+            const resultDiv = document.getElementById('fetchResult');
+            
+            loading.style.display = 'block';
+            resultDiv.innerHTML = '';
+
+            // 收集所有参数
+            const params = {
+                uuid: uuid,
+                start_time: document.getElementById('start_time').value,
+                end_time: document.getElementById('end_time').value,
+                limit: document.getElementById('limit').value,
+                max_pages: document.getElementById('max_pages').value,
+                match_type: document.getElementById('match_type').value,
+                cs_type: document.getElementById('cs_type').value,
+                date: document.getElementById('date').value
+            };
+
+            // 调用后端API
+            fetch('http://localhost:5000/api/fetch_stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                isFetching = false;  // 重置状态
+                if (data.success) {
+                    // 分割输出内容为行数组
+                    const outputLines = data.output.split('\n');
+                    // 获取前5行
+                    const previewLines = outputLines.slice(0, 5).join('\n');
+                    // 获取剩余行
+                    const remainingLines = outputLines.slice(5).join('\n');
+                    
+                    resultDiv.innerHTML = `
+                        <p>${data.message}</p>
+                        <pre>${previewLines}</pre>
+                        <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none'" 
+                                style="margin: 10px 0; padding: 5px 10px; background: #f0f0f0; border: 1px solid #ddd;">
+                            显示详细信息...
+                        </button>
+                        <pre style="display:none">${remainingLines}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p style="color: red">错误: ${data.message}</p>
+                        ${data.error ? `<pre>${data.error}</pre>` : ''}
+                    `;
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                isFetching = false;  // 重置状态
+                resultDiv.innerHTML = `
+                    <p style="color: red">请求失败: ${error.message}</p>
+                `;
+            });
+        }
+
+        let abortController = null;  // 用于存储AbortController实例
+
+        function analyzeData() {
+            const statsFileInput = document.getElementById('statsFile');
+            const templateFileInput = document.getElementById('templateFile');
+            const modelName = document.getElementById('modelName').value;
+            const cancelBtn = document.getElementById('cancelBtn');
+            
+            if (statsFileInput.files.length === 0) {
+                alert('请选择战绩数据文件');
+                return;
+            }
+            
+            if (templateFileInput.files.length === 0) {
+                alert('请选择模板文件');
+                return;
+            }
+
+            const loading = document.getElementById('loading2');
+            const resultDiv = document.getElementById('result');
+            
+            loading.style.display = 'block';
+            resultDiv.innerHTML = '';
+            cancelBtn.style.display = 'inline-block';
+
+            abortController = new AbortController();  // 创建新的AbortController
+
+            const formData = new FormData();
+            formData.append('statsFile', statsFileInput.files[0]);
+            formData.append('templateFile', templateFileInput.files[0]);
+            formData.append('model_name', modelName);
+
+            fetch('http://localhost:5000/api/analyze_stats', {
+                method: 'POST',
+                body: formData,
+                signal: abortController.signal  // 添加中断信号
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <h3>分析报告</h3>
+                        <pre>${data.analysis}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p style="color: red">错误: ${data.message}</p>
+                        ${data.error ? `<pre>${data.error}</pre>` : ''}
+                    `;
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                resultDiv.innerHTML = `
+                    <p style="color: red">请求失败: ${error.message}</p>
+                `;
+            });
+        }
+
+        function cancelAnalysis() {
+            if (abortController) {
+                abortController.abort();  // 中断请求
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '<p style="color: orange">分析已中断</p>';
+                document.getElementById('cancelBtn').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
