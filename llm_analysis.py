@@ -55,6 +55,29 @@ class CSGOPerformanceAnalyzer:
             f.write(analysis_text)
         return output_path
 
+    def save_html_result(self, analysis_text):
+        """保存为HTML格式的分析结果"""
+        from jinja2 import Template
+        os.makedirs('result', exist_ok=True)
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # 加载HTML模板
+        template_path = os.path.join(PATH, 'report_template.html')
+        with open(template_path, 'r', encoding='utf-8') as f:
+            template = Template(f.read())
+        
+        # 渲染HTML
+        html_content = template.render(
+            timestamp=timestamp,
+            content=analysis_text
+        )
+        
+        # 保存HTML文件
+        output_path = f"result/result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        return output_path
+
 def main(model_name="gemini-2.5-pro-exp-03-25", 
     data_file=os.path.join(PATH, 'stats_saved\\csgo_report_matches.csv'), 
     template_file=os.path.join(PATH,'templates\\template_default.txt'),
@@ -86,9 +109,11 @@ def main(model_name="gemini-2.5-pro-exp-03-25",
         else:
             output_path = analyzer.save_result(analysis)
         
+        analyzer.save_html_result(analysis)  # 保存为HTML格式
+        
         print(f"\n分析完成，结果已保存到: {output_path}")
         print("\n=== 分析报告 ===")
-        print(analysis)
+        
         return analysis  # 返回分析结果
     except Exception as e:
         print(f"发生错误: {str(e)}")

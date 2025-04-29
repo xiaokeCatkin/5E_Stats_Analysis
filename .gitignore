@@ -1,20 +1,7 @@
 .env
 Get_Stats/1.txt
 Get_Stats/test.py
-*.csv
-*.xlsx
-result/result_20250428_170819.txt
-result/result_20250428_170459.txt
-result/result_20250428_165219.txt
-result/result_20250428_164912.txt
-result/result_20250428_160913.txt
-result/result_20250428_160052.txt
-result/result_20250428_155913.txt
-result/result_20250428_154306.txt
-result/result_20250428_154036.txt
-result/result_20250428_152610.txt
-result/result_20250428_152103.txt
-result/result_20250428_150950.txt
-result/result_20250428_134943.txt
+stats_saved/
+result/
 uuid对照表
 
