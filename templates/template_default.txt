@@ -19,7 +19,7 @@
 ② 击杀能力（fight_击杀数）（fight_击杀数≥20为优势，<10为劣势）
 ③ 生存效率（fight_死亡数/fight_首死次数）（fight_死亡数/fight_首死次数≤1.5为优势，>2.5为劣势）
 ④ 团队协同（fight_KAST）（fight_KAST≥65%为优势，<50%为劣势）
-⑤ 武器专精（fight_headshot）（fight_headshot≥40%为优势，<20%为劣势）
+⑤ 瞄准能力（fight_headshot）（fight_headshot≥40%为优势，<20%为劣势）
 ⑥ 残局能力（fight_1vn残局次数）（fight_1vn残局次数总和>3为优势，<1为劣势；其中若有1v3 1v4甚至1v5则为突出优势）
 
 
