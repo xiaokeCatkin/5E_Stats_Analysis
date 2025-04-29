@@ -23,14 +23,14 @@
 - 有效的OpenAI API密钥(配置在.env文件中)
 
 ### 填好env文件
-在文件夹内复制.env.example 为 .env，填入你的openai api key。
+- 在文件夹内复制.env.example 为 .env，填入你的openai api key。
 
-此处模型默认使用gemini-2.5-pro-exp-03-25
+- 此处模型默认使用gemini-2.5-pro-exp-03-25
 
-环境变量目前包括：
+- 环境变量目前包括：
 
-OPENAI_API_KEY - OpenAI API密钥
-OPENAI_BASE_URL - OpenAI API基础URL（可选）
+  OPENAI_API_KEY - OpenAI API密钥
+  OPENAI_BASE_URL - OpenAI API基础URL（可选）
 
 ### 启动Web服务
 1. 启动API服务：
@@ -57,6 +57,7 @@ python api/api_server.py
 - 自动保存分析结果到result目录
 
 ## 项目结构
+'''
 CS_stats_Ana/
 ├── api/                  # API服务代码
 │   └── api_server.py     # Flask API服务
@@ -72,7 +73,7 @@ CS_stats_Ana/
 ├── llm_analysis.py       # 大模型分析主程序
 ├── batch_fetch_stats.py  # 批量获取脚本
 └── requirements.txt      # 依赖列表
-
+'''
 
 
 ## 贡献指南
