@@ -9,7 +9,7 @@
 - 提供可视化Web界面和API服务
 
 主要功能模块：
-- 数据获取：从5E平台的CS2 API获取比赛详情和玩家数据（5E战绩查询开源地址：https://github.com/loveboyme/5E_Play_CS-GO）
+- 数据获取：从5E平台的CS2 API获取比赛详情和玩家数据（5E战绩查询开源地址：https://github.com/loveboyme/5E_Play_CS-GO ）
 - 数据分析：使用AI模型进行专业分析
 - 可视化界面：提供Web界面，支持玩家数据查询和分析报告生成
 - 报告生成：输出Excel/CSV格式的完整报告
