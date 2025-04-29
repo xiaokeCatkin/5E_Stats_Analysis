@@ -57,7 +57,7 @@ python api/api_server.py
 - 自动保存分析结果到result目录
 
 ## 项目结构
-'''
+```
 CS_stats_Ana/
 ├── api/                  # API服务代码
 │   └── api_server.py     # Flask API服务
@@ -73,7 +73,7 @@ CS_stats_Ana/
 ├── llm_analysis.py       # 大模型分析主程序
 ├── batch_fetch_stats.py  # 批量获取脚本
 └── requirements.txt      # 依赖列表
-'''
+```
 
 
 ## 贡献指南
